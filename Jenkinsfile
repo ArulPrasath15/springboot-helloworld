@@ -9,10 +9,9 @@ pipeline {
     stages { 
         
         stage('mvn clean') { 
-            steps { 
-                sh 'echo $JAVA_HOME'
-               sh "mvn clean package"
-            }
+           withMaven {
+             sh "mvn clean verify"
+         } 
         } 
         
          stage('Building springboot image') { 
