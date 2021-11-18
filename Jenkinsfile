@@ -9,10 +9,12 @@ pipeline {
     stages { 
         
         stage('mvn clean') { 
-           withMaven {
-             sh "mvn clean verify"
-         } 
-        } 
+           steps { 
+                script { 
+                   sh 'mvn clean package'
+                }
+            } 
+        }
         
          stage('Building springboot image') { 
             steps { 
