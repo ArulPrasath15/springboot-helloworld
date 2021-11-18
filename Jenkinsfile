@@ -1,6 +1,6 @@
 pipeline { 
     environment { 
-        registry = "arulprasath/php-app" 
+        registry = "arulprasath/springboot-helloworld" 
         registryCredential = 'arul-dockerhub-id' 
         dockerImage = '' 
     }
@@ -8,16 +8,29 @@ pipeline {
     
     stages { 
         
-        stage('Hello') { 
+        stage('mvn clean') { 
             steps { 
-               sh "ls"
+               sh "mvn clean package"
             }
         } 
         
+         stage('Building springboot image') { 
+            steps { 
+                script { 
+                    dockerImage = docker.build registry 
+                }
+            } 
+        }
         
-        
-        
-        
-        
+        stage('Push image to docker hub') { 
+            steps { 
+                script { 
+                    docker.withRegistry( '', registryCredential ) { 
+                        dockerImage.push("build-$BUILD_NUMBER") 
+                    }
+                } 
+            }
+        } 
+            
     }
 }
