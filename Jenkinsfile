@@ -10,6 +10,7 @@ pipeline {
         
         stage('mvn clean') { 
             steps { 
+                sh 'mvn -version'
                sh "mvn clean package"
             }
         } 
