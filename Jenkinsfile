@@ -10,7 +10,7 @@ pipeline {
         
         stage('mvn clean') { 
             steps { 
-                sh 'mvn -version'
+                sh 'echo $JAVA_HOME'
                sh "mvn clean package"
             }
         } 
