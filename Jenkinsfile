@@ -11,6 +11,7 @@ pipeline {
         stage('mvn clean') { 
            steps { 
                 script { 
+                   sh 'echo $USER'
                    sh 'echo $JAVA_HOME'
                    sh 'mvn clean install'
                 }
