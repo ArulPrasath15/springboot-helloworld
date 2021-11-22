@@ -1,1 +1,38 @@
-
+#!/usr/bin/env groovy
+pipeline{
+    agent any
+    parameters {
+            string(name: "BUILD_NUMBER", defaultValue: "1", trim: true, description: "Enter the Build Number")
+        }
+    stages{
+         stage('DEV_ENV'){
+            steps{
+                sh "docker rm -f springboot-helloworld-dev || true"
+                sh "docker run --rm -dp 81:8080 --name springboot-helloworld-dev arulprasath/springboot-helloworld:build-${params.BUILD_NUMBER}"
+                echo "Application link <your-ip>:81"
+            }
+        }
+      stage('QA_ENV'){
+            steps{
+                script {
+                    env.APPROVE_QA = input message: 'Deploy to QA', ok: 'Continue',
+                                parameters: [choice(name: 'APPROVE_QA', choices: 'YES\nNO', description: 'Deploy from DEV to QA?')]
+                if (env.APPROVE_QA == 'YES'){
+                    sh "docker rm -f springboot-helloworld-dev || true"  // for removing dev container
+                    sh "docker rm -f springboot-helloworld-qa || true"
+                    sh "docker run --rm -dp 82:8080 --name springboot-helloworld-qa arulprasath/springboot-helloworld:build-${params.BUILD_NUMBER}"
+                    echo "Application link <your-ip>:82"
+                }else{
+                    echo "Exited from deploy"
+                }
+            }
+        }
+      }
+      stage('CLEAN UP'){
+            steps{
+                echo "Removing dangling Images"
+                sh 'docker image prune -f'
+            }
+        }
+    }
+}
