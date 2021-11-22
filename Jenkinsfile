@@ -8,7 +8,7 @@ pipeline {
     
     stages { 
         
-        stage('mvn clean') { 
+        stage('Building war') { 
            steps { 
                 script { 
        
@@ -16,6 +16,16 @@ pipeline {
                    sh 'mvn clean install'
                 }
             } 
+        }
+		
+	 stage('create git tag'){
+            steps{
+                sshagent (credentials: ['github-sshkey']) {
+                    sh "git tag -a $GIT_TAG -m 'Version $BUILD_NUMBER'"
+                    sh('git push git@github.com:ArulPrasath15/springboot-helloworld.git HEAD:$BRANCH_NAME --tag  --force')
+                
+                }
+            }
         }
         
          stage('Building springboot image') { 
@@ -36,5 +46,10 @@ pipeline {
             }
         } 
             
+    }
+    post{
+        success{
+            build job: assignment-10-deploy-pipeline', parameters: [string(name: 'BUILD_NUMBER', value: "$BUILD_NUMBER")]
+        }
     }
 }
