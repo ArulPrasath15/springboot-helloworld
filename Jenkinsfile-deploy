@@ -16,9 +16,9 @@ pipeline{
             steps{
                 script {
                     env.APPROVE_QA = input message: 'Deploy to QA', ok: 'Continue',
-                                parameters: [choice(name: 'APPROVE_QA', choices: 'YES\nNO', description: 'Deploy from DEV to QA?')]
+                                parameters: [choice(name: 'APPROVE_QA', choices: 'YES\nNO', description: 'Deploy from DEV_ENV to QA_ENV?')]
                 if (env.APPROVE_QA == 'YES'){
-                    sh "docker rm -f springboot-helloworld-dev || true"  // for removing dev container
+                    sh "docker rm -f springboot-helloworld-dev || true" 
                     sh "docker rm -f springboot-helloworld-qa || true"
                     sh "docker run --rm -dp 82:8080 --name springboot-helloworld-qa arulprasath/springboot-helloworld:build-${params.BUILD_NUMBER}"
                     echo "Application link <your-ip>:82"
